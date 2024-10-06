@@ -1,9 +1,17 @@
+using WEB_253504_Kolesnikov.UI;
 using WEB_253504_Kolesnikov.UI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var uriData = builder.Configuration.GetSection("UriData").Get<UriData>();
+
+builder.Services.AddHttpClient("ApiClient", client =>
+{
+    client.BaseAddress = new Uri(uriData!.ApiUri);
+});
 
 builder.RegisterCustomServices();
 
@@ -23,6 +31,12 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+//app.MapControllerRoute(
+//    name: "movies",
+//    pattern: "catalog/{genre?}/{page?}",
+//    defaults: new { controller = "Movie", action = "Index" }
+//);
 
 app.MapControllerRoute(
     name: "default",

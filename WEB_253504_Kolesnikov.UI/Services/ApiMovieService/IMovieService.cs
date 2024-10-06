@@ -1,7 +1,7 @@
 ﻿using WEB_253504_Kolesnikov.Domain.Entities;
 using WEB_253504_Kolesnikov.Domain.Models;
 
-namespace WEB_253504_Kolesnikov.UI.Services.MovieService
+namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
 {
     public interface IMovieService
     {
@@ -12,7 +12,7 @@ namespace WEB_253504_Kolesnikov.UI.Services.MovieService
         ///фильтрации</param>
         /// <param name="pageNo">номер страницы списка</param>
         /// <returns></returns>
-        public Task<ResponseData<ProductListModel<Movie>>> GetMovieListAsync(string? categoryNormalizedName, int pageNo=1);
+        public Task<ResponseData<ProductListModel<Movie>>> GetMovieListAsync(string? categoryNormalizedName, int pageNo = 1);
         /// <summary>
         /// Поиск объекта по Id
         /// </summary>
@@ -39,6 +39,7 @@ namespace WEB_253504_Kolesnikov.UI.Services.MovieService
         /// <param name="product">Новый объект</param>
         /// <param name="formFile">Файл изображения</param>
         /// <returns>Созданный объект</returns>
-        public Task<ResponseData<Movie>> CreateMovieAsync(Movie product, IFormFile? formFile);
+        //public Task<ResponseData<Movie>> CreateMovieAsync(Movie product, IFormFile? formFile);
+        public Task<ResponseData<int>> CreateMovieAsync(Movie product, IFormFile? formFile);
     }
 }

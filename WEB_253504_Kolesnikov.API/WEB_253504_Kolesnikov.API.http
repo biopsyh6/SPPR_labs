@@ -1,0 +1,6 @@
+@WEB_253504_Kolesnikov.API_HostAddress = http://localhost:5125
+
+GET {{WEB_253504_Kolesnikov.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

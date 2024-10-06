@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WEB_253504_Kolesnikov.Domain.Entities;
 using WEB_253504_Kolesnikov.Domain.Models;
-using WEB_253504_Kolesnikov.UI.Services.GenreService;
-using WEB_253504_Kolesnikov.UI.Services.MovieService;
+using WEB_253504_Kolesnikov.UI.Services.ApiGenreService;
+using WEB_253504_Kolesnikov.UI.Services.ApiMovieService;
 
 namespace WEB_253504_Kolesnikov.UI.Controllers
 {
@@ -15,6 +15,7 @@ namespace WEB_253504_Kolesnikov.UI.Controllers
             _movieService = movieService;
             _genreService = genreService;
         }
+        //[Route("catalog/{genre?}")]
         public async Task <IActionResult> Index(string? genre, int? page)
         {
             int pageNumber = page ?? 1;

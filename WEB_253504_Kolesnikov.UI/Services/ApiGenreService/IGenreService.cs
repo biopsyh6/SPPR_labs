@@ -1,7 +1,7 @@
 ﻿using WEB_253504_Kolesnikov.Domain.Entities;
 using WEB_253504_Kolesnikov.Domain.Models;
 
-namespace WEB_253504_Kolesnikov.UI.Services.GenreService
+namespace WEB_253504_Kolesnikov.UI.Services.ApiGenreService
 {
     public interface IGenreService
     {
