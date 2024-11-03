@@ -16,6 +16,11 @@ namespace WEB_253504_Kolesnikov.API.Services.MovieService
         }
         public async Task<ResponseData<int>> CreateMovieAsync(Movie product)
         {
+            if (string.IsNullOrEmpty(product.Genre?.Name) && product.Genre != null)
+            {
+                var genre = _appDbContext.Genres.FirstOrDefault(g => g.Id == product.Genre.Id);
+                product.Genre = genre;
+            }
             var movie = await _appDbContext.Movies.AddAsync(product);
             await _appDbContext.SaveChangesAsync();
             return ResponseData<int>.Success(movie.Entity.Id);

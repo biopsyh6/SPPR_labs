@@ -3,6 +3,8 @@ using System.Text;
 using System.Text.Json;
 using WEB_253504_Kolesnikov.Domain.Entities;
 using WEB_253504_Kolesnikov.Domain.Models;
+using WEB_253504_Kolesnikov.UI.Services.ApiFileService;
+using WEB_253504_Kolesnikov.UI.Services.Authentication;
 
 namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
 {
@@ -14,9 +16,11 @@ namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
         private readonly ILogger<ApiMovieService> _logger;
         private readonly string _pageSize;
         private readonly JsonSerializerOptions _serializerOptions;
+        private readonly IFileService _fileService;
+        private readonly ITokenAccessor _tokenAccessor;
 
         public ApiMovieService(IConfiguration configuration,
-            ILogger<ApiMovieService> logger, IHttpClientFactory httpClientFactory) 
+            ILogger<ApiMovieService> logger, IHttpClientFactory httpClientFactory, IFileService fileService, ITokenAccessor tokenAccessor) 
         { 
             _configuration = configuration;
             _pageSize = _configuration.GetSection("ItemsPerPage").Value!;
@@ -27,11 +31,27 @@ namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _httpClient = _httpClientFactory.CreateClient("ApiClient");
+            _fileService = fileService;
+            _tokenAccessor = tokenAccessor;
         }
 
         public async Task<ResponseData<int>> CreateMovieAsync(Movie product, IFormFile? formFile)
         {
+            //default picture
+            product.ImagePath = "Images/no-image.jpg";
+
+            if(formFile != null)
+            {
+                var imageUrl = await _fileService.SaveFileAsync(formFile);
+                if (!string.IsNullOrEmpty(imageUrl)) 
+                {
+                    product.ImagePath = imageUrl;
+                }
+            }
             var urlString = new StringBuilder($"{_httpClient.BaseAddress!.AbsoluteUri}Movies/");
+
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             var response = await _httpClient.PostAsJsonAsync(new Uri(urlString.ToString()), product, _serializerOptions);
 
             if (response.IsSuccessStatusCode)
@@ -52,14 +72,50 @@ namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
 
         }
 
-        public Task DeleteMovieAsync(int id)
+        public async Task<ResponseData<bool>> DeleteMovieAsync(int id)
         {
-            throw new NotImplementedException();
+            var urlString = new StringBuilder($"{_httpClient.BaseAddress!.AbsoluteUri}Movies/");
+            urlString.Append($"{id}");
+
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
+            var response = await _httpClient.DeleteAsync(new Uri(urlString.ToString()));
+
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    return await response.Content.ReadFromJsonAsync<ResponseData<bool>>(_serializerOptions);
+                }
+                catch (JsonException ex)
+                {
+                    return ResponseData<bool>.Error($"Error: {ex.Message}");
+                }
+            }
+            return ResponseData<bool>.Error($"Данные не получены от сервера. Error: {response.StatusCode.ToString()}");
         }
 
-        public Task<ResponseData<Movie>> GetMovieByIdAsync(int id)
+        public async Task<ResponseData<Movie>> GetMovieByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var urlString = new StringBuilder($"{_httpClient.BaseAddress!.AbsoluteUri}Movies/");
+            urlString.Append($"{id}");
+
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
+            var response = await _httpClient.GetAsync(new Uri(urlString.ToString()));
+
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    return await response.Content.ReadFromJsonAsync<ResponseData<Movie>>(_serializerOptions);
+                }
+                catch (JsonException ex)
+                {
+                    return ResponseData<Movie>.Error($"Error: {ex.Message}");
+                }
+            }
+            return ResponseData<Movie>.Error($"Данные не получены от сервера. Error: {response.StatusCode.ToString()}");
         }
 
         public async Task<ResponseData<ProductListModel<Movie>>> GetMovieListAsync(string? categoryNormalizedName, int pageNo = 1)
@@ -85,6 +141,8 @@ namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
 
             var fullUrl = QueryHelpers.AddQueryString(urlString.ToString(), queryParams);
 
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             //send request to api
             var response = await _httpClient.GetAsync(fullUrl);
 
@@ -106,9 +164,42 @@ namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
                 .Error($"Данные не получены от сервера. Error: {response.StatusCode.ToString()}");
         }
 
-        public Task UpdateMovieAsync(int id, Movie product, IFormFile? formFile)
+        public async Task<ResponseData<bool>> UpdateMovieAsync(int id, Movie product, IFormFile? formFile)
         {
-            throw new NotImplementedException();
+            //default picture
+            product.ImagePath = "Images/no-image.jpg";
+
+            if (formFile != null)
+            {
+                var imageUrl = await _fileService.SaveFileAsync(formFile);
+                if (!string.IsNullOrEmpty(imageUrl))
+                {
+                    product.ImagePath = imageUrl;
+                }
+            }
+
+            var urlString = new StringBuilder($"{_httpClient.BaseAddress!.AbsoluteUri}Movies/");
+            urlString.Append($"{id}");
+
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
+            var response = await _httpClient.PutAsJsonAsync(new Uri(urlString.ToString()), product, _serializerOptions);
+
+            if (response.IsSuccessStatusCode) 
+            {
+                try
+                {
+                    return await response.Content.ReadFromJsonAsync<ResponseData<bool>>(_serializerOptions);
+                }
+                catch (JsonException ex)
+                {
+                    _logger.LogError($"Error: {ex.Message}");
+                    return ResponseData<bool>.Error($"Error: {ex.Message}");
+                }
+            }
+            _logger.LogError($"Object not updated. Error: {response.StatusCode.ToString()}");
+            return ResponseData<bool>
+                .Error($"Object not updated. Error: {response.StatusCode.ToString()}");
         }
     }
 }

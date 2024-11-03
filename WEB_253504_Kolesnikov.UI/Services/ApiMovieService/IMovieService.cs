@@ -26,13 +26,13 @@ namespace WEB_253504_Kolesnikov.UI.Services.ApiMovieService
         /// <param name="product">объект с новыми параметрами</param>
         /// <param name="formFile">Файл изображения</param>
         /// <returns></returns>
-        public Task UpdateMovieAsync(int id, Movie product, IFormFile? formFile);
+        public Task<ResponseData<bool>> UpdateMovieAsync(int id, Movie product, IFormFile? formFile);
         /// <summary>
         /// Удаление объекта
         /// </summary>
         /// <param name="id">Id удаляемомго объекта</param>
         /// <returns></returns>
-        public Task DeleteMovieAsync(int id);
+        public Task<ResponseData<bool>> DeleteMovieAsync(int id);
         /// <summary>
         /// Создание объекта
         /// </summary>
