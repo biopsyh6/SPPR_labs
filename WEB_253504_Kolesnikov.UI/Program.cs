@@ -16,6 +16,9 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddDbContext<AppDbContextUI>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
@@ -67,13 +70,22 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.MapRazorPages().RequireAuthorization("admin");
+
 app.MapRazorPages();
+
+app.UseSession();
 
 //app.MapControllerRoute(
 //    name: "movies",
 //    pattern: "catalog/{genre?}/{page?}",
 //    defaults: new { controller = "Movie", action = "Index" }
 //);
+
+//app.MapControllerRoute(
+//    name: "MovieRoute",
+//    pattern: "Movie/{genre}/{page:int}",
+//    defaults: new { controller = "Movie", action = "Index" });
 
 app.MapControllerRoute(
     name: "areas",

@@ -54,15 +54,24 @@
 }
     </tbody>
 </table>
+<div>
+    <AdminPager current-page="@(Model.Movie.Data.CurrentPage)"
+                total-pages="@(Model.Movie.Data.TotalPages)" />
+</div>
 
 @* @{
-    var currPage = Model.CurrentPage;
+    var currPage = Model.Movie.Data.CurrentPage;
     var prevPage = currPage == 1 ? 1 : currPage - 1;
-    var totalPages = Model.TotalPages;
+    var totalPages = Model.Movie.Data.TotalPages;
     var nextPage = currPage == totalPages ? totalPages : currPage + 1;
-} *@
+}
 
-<nav aria-label="Page navigation">
+<Pager current-page="@(currPage)"
+       total-pages="@(totalPages)"
+       admin="true" /> *@
+
+
+@* <nav aria-label="Page navigation">
     <ul class="pagination">
         <li class="page-item @(Model.Movie.Data.CurrentPage == 1 ? "disabled" : "")">
             <a class="page-link" asp-page="/Product/Index" asp-route-pageNo="@(Model.Movie.Data.CurrentPage - 1)">
@@ -81,5 +90,9 @@
             </a>
         </li>
     </ul>
-</nav>
+</nav> *@
+
+
+
+
 

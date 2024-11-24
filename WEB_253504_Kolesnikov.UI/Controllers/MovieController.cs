@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WEB_253504_Kolesnikov.Domain.Entities;
 using WEB_253504_Kolesnikov.Domain.Models;
+using WEB_253504_Kolesnikov.UI.Extensions;
 using WEB_253504_Kolesnikov.UI.Services.ApiGenreService;
 using WEB_253504_Kolesnikov.UI.Services.ApiMovieService;
 
 namespace WEB_253504_Kolesnikov.UI.Controllers
 {
+    [Route("[controller]")]
     public class MovieController : Controller
     {
         private readonly IMovieService _movieService;
@@ -15,7 +17,8 @@ namespace WEB_253504_Kolesnikov.UI.Controllers
             _movieService = movieService;
             _genreService = genreService;
         }
-        //[Route("catalog/{genre?}")]
+        //[Route("{genre}")]
+        [Route("{genre}/{page:int}")]
         public async Task <IActionResult> Index(string? genre, int? page)
         {
             int pageNumber = page ?? 1;
@@ -33,6 +36,12 @@ namespace WEB_253504_Kolesnikov.UI.Controllers
             Console.WriteLine($"Gerne: {genre}, {currentGenre}");
             ViewData["genres"] = _genreService.GetGenreListAsync().Result.Data;
             ViewData["totalPages"] = movieResponse.Data!.TotalPages;
+
+            var pageViewModel = new ProductListModel<Movie> { Items = movieResponse.Data.Items, CurrentPage = pageNumber, TotalPages = movieResponse.Data.TotalPages };
+            if (Request.IsAjaxRequest()) 
+            {
+                return PartialView("_MovieListPartial", pageViewModel);
+            }
 
             return View(new ProductListModel<Movie> { Items = movieResponse.Data.Items, CurrentPage = 1, TotalPages = 1 });
         }

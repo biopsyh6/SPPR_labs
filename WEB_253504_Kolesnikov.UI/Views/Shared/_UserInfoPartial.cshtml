@@ -22,7 +22,7 @@
 
 @if (User.Identity!.IsAuthenticated)
 {
-    @await Component.InvokeAsync("CartSummary")
+    @await Component.InvokeAsync("Cart")
     <div class="dropdown ms-4 nav-color">
         <button class="btn btn-secondary dropdown-toggle"
                 type="button" id="dropdownMenuButton"

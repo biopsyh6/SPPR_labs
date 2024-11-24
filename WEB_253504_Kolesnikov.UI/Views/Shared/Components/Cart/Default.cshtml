@@ -1,0 +1,10 @@
+﻿@inject Cart cart
+@{
+    int sum_duration = cart.CartItems.Sum(i => i.Value.Movie.Duration * i.Value.Count);
+    int count = cart.CartItems.Sum(i => i.Value.Count);
+}
+<a asp-controller="Cart" asp-action="Index" class="navbar-text ms-auto">
+    <span>@(sum_duration) duration</span>
+    <span>(@(count))</span>
+    <i class="fa-solid fa-cart-shopping"></i>
+</a>

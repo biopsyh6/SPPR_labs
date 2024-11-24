@@ -41,7 +41,7 @@ namespace WEB_253504_Kolesnikov.API.Controllers
 
         // GET: api/Movies/5
         [HttpGet("{id:int}")]
-        [Authorize(Policy = "admin")]
+        //[Authorize(Policy = "admin")]
         public async Task<ActionResult<ResponseData<Movie>>> GetMovie(int id)
         {
             var response = await _movieService.GetMovieByIdAsync(id);

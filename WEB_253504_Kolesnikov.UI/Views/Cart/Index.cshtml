@@ -1,0 +1,59 @@
+﻿@model Cart
+
+<h1>Cart</h1>
+
+@if (Model.CartItems.Count == 0)
+{
+    <p>Cart is Empty</p>
+}
+else
+{
+    <table class="table-cart">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Poster</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Duration</th>
+                <th>Count</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach (var item in Model.CartItems)
+            {
+                <tr>
+                    <td>
+                        <p style="text-align: center">@(index++)</p>
+                    </td>
+                    <td>
+                        <img style="max-height: 200px; max-width: 200px;" src="@(item.Value.Movie.ImagePath)" />
+                    </td>
+                    <td>
+                        <p>@(item.Value.Movie.Title)</p>
+                    </td>
+                    <td>
+                        <p>@(item.Value.Movie.Description)</p>
+                    </td>
+                    <td>
+                        <p style="text-align:center">@(item.Value.Movie.Duration) min</p>
+                    </td>
+                    <td>
+                        <p style="text-align:center; font-size:20px">@(item.Value.Count)</p>
+                    </td>
+                    <td>
+                        <div>
+                            <a asp-controller="Cart" asp-action="RemoveFromCart" asp-route-id="@item.Key" asp-route-returnUrl="https://localhost:7001/Cart">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-controller="Cart" asp-action="ClearCart" asp-route-returnUrl="https://localhost:7001/Cart" class="btn btn-danger">Clear Cart</a>
+}
+
